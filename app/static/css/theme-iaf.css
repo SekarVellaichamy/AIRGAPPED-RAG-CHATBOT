@@ -1,0 +1,429 @@
+/**
+ * Indian Air Force Theme - "Guardians of the Sky"
+ * Retro-Futuristic / Cockpit HUD Aesthetic
+ */
+
+:root {
+    /* IAF Palette */
+    --iaf-navy: #050a14;
+    /* Darker, deeper space */
+    --iaf-sky: #00daff;
+    /* Brighter Cyan for HUD glow */
+    --iaf-blue-dark: #004ba0;
+    /* Deep functional blue */
+    --iaf-saffron: #ff8c00;
+    /* Vibrant Alert Orange/Saffron */
+    --iaf-white: #e0faff;
+    /* Slightly tinted white for screen glow */
+    --iaf-green: #00e676;
+    /* HUD Green */
+
+    /* Functional Colors */
+    --hud-bg: rgba(5, 10, 20, 0.85);
+    --hud-border: rgba(0, 218, 255, 0.3);
+    --hud-border-bright: rgba(0, 218, 255, 0.8);
+    --hud-glass: rgba(0, 218, 255, 0.05);
+
+    /* Text */
+    --text-primary: #e0faff;
+    --text-muted: #64748b;
+    --text-highlight: #00daff;
+
+    /* Fonts */
+    --font-head: 'Orbitron', 'Rajdhani', sans-serif;
+    --font-body: 'Exo 2', 'Share Tech Mono', monospace;
+}
+
+/* Global Reset & Typography */
+body {
+    background-color: var(--iaf-navy);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    /* Subtle grid background */
+    background-image:
+        linear-gradient(rgba(0, 218, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 218, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center center;
+    overflow: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.navbar-brand {
+    font-family: var(--font-head);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(0, 218, 255, 0.5);
+}
+
+/* Navbar - HUD Header System */
+.navbar {
+    background: rgba(5, 10, 20, 0.95) !important;
+    border-bottom: 2px solid var(--hud-border);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+.navbar-brand {
+    background: linear-gradient(90deg, var(--iaf-saffron), var(--iaf-white), var(--iaf-green));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+    font-weight: 800;
+}
+
+/* Main Layout */
+.main-container {
+    height: calc(100vh - 58px);
+    /* Adjust for border */
+    display: flex;
+    overflow: hidden;
+}
+
+/* Sidebar - Data Panel */
+.sidebar {
+    background: var(--hud-bg) !important;
+    border-right: 2px solid var(--hud-border) !important;
+    position: relative;
+}
+
+.sidebar::after {
+    /* Decorative corner */
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    border-top: 2px solid var(--hud-border-bright);
+    border-right: 2px solid var(--hud-border-bright);
+}
+
+/* Sidebar Overlay removed */
+
+/* Mobile Sidebar Logic removed - Sidebar always visible or hidden via other means if needed (desktop only request) */
+@media (max-width: 768px) {
+    /* If we want to hide it completely on mobile or keep it, user said "Mobile support not needed"
+       so we can probably just leave it as normal flow or hide it if it breaks layout.
+       For now, reverting to default layout behavior. */
+}
+
+/* Chat Area - Main Tactical Display */
+.chat-area {
+    background: radial-gradient(circle at center, rgba(0, 75, 160, 0.05) 0%, transparent 70%);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+}
+
+.chat-container {
+    padding: 2rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    scrollbar-width: thin;
+    scrollbar-color: var(--iaf-sky) var(--iaf-navy);
+}
+
+/* Message List Spacing */
+.chat-container>* {
+    margin-bottom: 1.5rem;
+}
+
+/* ============================================
+   HUD MESSAGE BUBBLES
+   ============================================ */
+
+.message-wrapper {
+    display: flex;
+    flex-direction: column;
+    max-width: 85%;
+    position: relative;
+}
+
+.user-wrapper {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+
+.ai-wrapper {
+    align-self: flex-start;
+    align-items: flex-start;
+}
+
+.message-bubble {
+    padding: 1rem 1.5rem;
+    position: relative;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+/* User Message - Command Transmission */
+.user-message {
+    background: rgba(0, 75, 160, 0.4);
+    border: 1px solid var(--iaf-blue-dark);
+    border-right: 4px solid var(--iaf-saffron);
+    /* Saffron ID bar */
+    color: var(--iaf-white);
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    font-family: var(--font-body);
+    box-shadow: 0 0 15px rgba(255, 140, 0, 0.1);
+}
+
+.user-message::before {
+    content: 'CMD :: OUT';
+    position: absolute;
+    top: -18px;
+    right: 0;
+    font-family: var(--font-head);
+    font-size: 0.6rem;
+    color: var(--iaf-saffron);
+    letter-spacing: 1px;
+    opacity: 0.8;
+}
+
+/* AI Message - System Response */
+.ai-message {
+    background: rgba(5, 20, 30, 0.8);
+    border: 1px solid var(--hud-border);
+    border-left: 4px solid var(--iaf-sky);
+    /* Sky Blue ID bar */
+    color: var(--text-primary);
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    box-shadow: 0 0 15px rgba(0, 218, 255, 0.05);
+}
+
+.ai-message::before {
+    content: 'SYS :: IN';
+    position: absolute;
+    top: -18px;
+    left: 0;
+    font-family: var(--font-head);
+    font-size: 0.6rem;
+    color: var(--iaf-sky);
+    letter-spacing: 1px;
+    opacity: 0.8;
+}
+
+/* Message Actions (Copy etc) */
+.message-actions {
+    opacity: 0;
+    transition: opacity 0.2s;
+    margin-top: 4px;
+}
+
+.message-wrapper:hover .message-actions {
+    opacity: 1;
+}
+
+.msg-action-btn {
+    background: transparent;
+    border: 1px solid var(--hud-border);
+    color: var(--text-muted);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+}
+
+.msg-action-btn:hover {
+    color: var(--iaf-sky);
+    border-color: var(--iaf-sky);
+    box-shadow: 0 0 8px var(--iaf-sky);
+}
+
+/* ============================================
+   CONTROL PANEL (Input Area)
+   ============================================ */
+
+#chat-form {
+    padding: 1rem 1.5rem;
+    background: rgba(5, 10, 20, 0.95);
+    border-top: 2px solid var(--hud-border);
+    position: relative;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+}
+
+#chat-form::before {
+    /* Top decorative line */
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30%;
+    height: 2px;
+    background: var(--iaf-sky);
+    box-shadow: 0 0 10px var(--iaf-sky);
+}
+
+#chat-form .input-group {
+    background: rgba(0, 20, 40, 0.6);
+    border: 1px solid var(--hud-border);
+    border-radius: 0;
+    /* Sharp edges */
+    padding: 5px;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+
+#chat-form input.form-control {
+    background: transparent;
+    border: none;
+    color: var(--iaf-sky);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    caret-color: var(--iaf-saffron);
+}
+
+#chat-form input.form-control::placeholder {
+    color: rgba(0, 218, 255, 0.3);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+#chat-form input.form-control:focus {
+    box-shadow: none;
+    background: transparent;
+}
+
+/* Mode Selector & Selects */
+.form-select {
+    background-color: rgba(0, 20, 40, 0.6);
+    border: 1px solid var(--hud-border);
+    color: var(--iaf-sky);
+    border-radius: 0;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    box-shadow: none;
+}
+
+.form-select:focus {
+    background-color: rgba(0, 30, 60, 0.8);
+    border-color: var(--iaf-sky);
+    box-shadow: 0 0 10px rgba(0, 218, 255, 0.2);
+    color: var(--iaf-white);
+}
+
+#chat-form button.btn-primary {
+    background: var(--iaf-blue-dark);
+    border: 1px solid var(--iaf-sky);
+    color: var(--iaf-white);
+    font-family: var(--font-head);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 0;
+    padding: 0 20px;
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px);
+    transition: all 0.3s;
+}
+
+#chat-form button.btn-primary:hover {
+    background: var(--iaf-sky);
+    color: #000;
+    box-shadow: 0 0 15px var(--iaf-sky);
+    text-shadow: none;
+}
+
+/* "ENGAGE" logic for send button hover */
+#chat-form button.btn-primary:hover i {
+    animation: slideRight 0.3s forwards;
+}
+
+@keyframes slideRight {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(3px);
+    }
+}
+
+/* ============================================
+   SCROLLBARS
+   ============================================ */
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #020408;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--iaf-blue-dark);
+    border: 1px solid var(--iaf-sky);
+    border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--iaf-sky);
+}
+
+/* ============================================
+   MISC & UTILITIES
+   ============================================ */
+
+/* Export Toolbar */
+.export-toolbar {
+    background: rgba(5, 10, 20, 0.8) !important;
+    border-bottom: 1px solid var(--hud-border) !important;
+    display: flex;
+    gap: 10px;
+    padding: 5px 15px;
+}
+
+.export-toolbar .btn {
+    color: var(--text-muted) !important;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 1px solid transparent !important;
+}
+
+.export-toolbar .btn:hover {
+    color: var(--iaf-sky) !important;
+    border-color: var(--iaf-sky) !important;
+    background: rgba(0, 218, 255, 0.1) !important;
+}
+
+/* Thinking Process - "Data Processing" */
+.thinking-process {
+    border: 1px solid var(--hud-border) !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    border-left: 2px dotted var(--iaf-saffron) !important;
+    margin: 10px 0;
+}
+
+.thinking-summary {
+    color: var(--iaf-saffron) !important;
+    font-family: var(--font-head);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+
+.thinking-content {
+    color: var(--text-muted) !important;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+}
+
+/* Selection */
+::selection {
+    background: var(--iaf-sky);
+    color: #000;
+}

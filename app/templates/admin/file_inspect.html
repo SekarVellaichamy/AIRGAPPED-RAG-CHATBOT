@@ -1,0 +1,102 @@
+{% extends "admin/base_admin.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">Inspect Document</h2>
+            <p class="text-muted">{{ document.filename }} (ID: {{ document.id }})</p>
+        </div>
+        <div>
+            <a href="/admin/files/{{ document.id }}/download" class="btn btn-outline-primary me-2">
+                <i class="bi bi-download"></i> Download File
+            </a>
+            <a href="/admin/files" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Files
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Document Metadata</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3"><strong>Content Type:</strong></div>
+                <div class="col-md-9">{{ document.file_type }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-3"><strong>Uploaded At:</strong></div>
+                <div class="col-md-9">{{ document.uploaded_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-3"><strong>Total Chunks:</strong></div>
+                <div class="col-md-9">{{ chunks|length }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Chunks & Embeddings</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 5%">ID</th>
+                            <th style="width: 5%">Page</th>
+                            <th style="width: 60%">Content</th>
+                            <th style="width: 30%">Embedding Preview</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for chunk in chunks %}
+                        <tr class="{{ 'table-info' if chunk.is_summary else '' }}">
+                            <td>
+                                {{ chunk.id }}
+                                {% if chunk.is_summary %}
+                                <span class="badge bg-primary">Summary</span>
+                                {% endif %}
+                                {% if chunk.parent_id %}
+                                <br><small class="text-muted">Parent: {{ chunk.parent_id }}</small>
+                                {% endif %}
+                            </td>
+                            <td>{{ chunk.page_number if chunk.page_number is not none else '-' }}</td>
+                            <td>
+                                <div style="max-height: 150px; overflow-y: auto; white-space: pre-wrap; font-size: 0.9em;"
+                                    class="border p-2 bg-light rounded">{{ chunk.content }}</div>
+                            </td>
+                            <td>
+                                <div style="font-family: monospace; font-size: 0.85em;">
+                                    {% if chunk.embedding is not none %}
+                                    <div class="mb-1 text-success">
+                                        <i class="bi bi-check-circle-fill"></i> Indexed ({{ chunk.embedding|length }}
+                                        dims)
+                                    </div>
+                                    <span class="text-muted d-block text-truncate" style="max-width: 300px;"
+                                        title="{{ chunk.embedding }}">
+                                        [{{ chunk.embedding[:5]|join(', ') }}, ...]
+                                    </span>
+                                    {% else %}
+                                    <span class="text-danger">
+                                        <i class="bi bi-exclamation-circle-fill"></i> No Embedding
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">No chunks found for this document.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

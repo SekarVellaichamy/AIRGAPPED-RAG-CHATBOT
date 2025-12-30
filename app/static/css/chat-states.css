@@ -1,0 +1,283 @@
+/**
+ * Chat States and Loading Animations
+ * HUD Edition
+ */
+
+/* ============================================
+   SENDING STATE - "Transmitting"
+   ============================================ */
+
+.message-sending {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    margin-bottom: 15px;
+    opacity: 0.9;
+    align-self: flex-end;
+    margin-left: auto;
+    border-right: 2px solid var(--iaf-saffron);
+    background: linear-gradient(90deg, transparent, rgba(255, 140, 0, 0.1));
+}
+
+.message-sending-text {
+    font-size: 0.8rem;
+    color: var(--iaf-saffron);
+    font-family: var(--font-head);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sending-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--iaf-saffron);
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    box-shadow: 0 0 8px var(--iaf-saffron);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============================================
+   TYPING INDICATOR - "Processing Data"
+   ============================================ */
+
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    background: rgba(5, 20, 30, 0.8);
+    border: 1px solid var(--hud-border);
+    border-left: 2px solid var(--iaf-sky);
+    margin-bottom: 15px;
+    align-self: flex-start;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+    box-shadow: 0 0 10px rgba(0, 218, 255, 0.1);
+    animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Data Stream Dots */
+.typing-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.typing-dot {
+    width: 4px;
+    height: 12px;
+    /* Rectangular bits */
+    background-color: var(--iaf-sky);
+    animation: dataStream 1s infinite alternate;
+    box-shadow: 0 0 5px var(--iaf-sky);
+}
+
+.typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+    height: 16px;
+}
+
+.typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes dataStream {
+    0% {
+        opacity: 0.3;
+        transform: scaleY(0.8);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleY(1.2);
+    }
+}
+
+.typing-text {
+    font-size: 0.75rem;
+    color: var(--iaf-sky);
+    font-family: var(--font-head);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* ============================================
+   INPUT STATES
+   ============================================ */
+
+.chat-form-sending .form-control {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+.chat-form-sending .btn-primary {
+    background: transparent;
+    border-color: var(--text-muted);
+    color: var(--text-muted);
+    cursor: wait;
+    box-shadow: none;
+}
+
+/* ============================================
+   MESSAGE ANIMATION - "Incoming"
+   ============================================ */
+
+.message-bubble.message-new {
+    animation: messageScan 0.5s ease-out;
+}
+
+@keyframes messageScan {
+    0% {
+        opacity: 0;
+        clip-path: inset(0 100% 0 0);
+    }
+
+    100% {
+        opacity: 1;
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+/* ============================================
+   ERROR STATE - "System Failure"
+   ============================================ */
+
+.message-error {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: rgba(40, 10, 10, 0.9);
+    border: 1px solid #ff3333;
+    border-left: 4px solid #ff3333;
+    margin-bottom: 15px;
+    align-self: flex-end;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+    box-shadow: 0 0 15px rgba(255, 50, 50, 0.2);
+}
+
+.message-error-text {
+    color: #ffcccc;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+}
+
+.message-error-retry {
+    margin-left: auto;
+    padding: 2px 8px;
+    background: transparent;
+    border: 1px solid #ff3333;
+    color: #ff3333;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.message-error-retry:hover {
+    background: #ff3333;
+    color: #000;
+}
+
+/* ============================================
+   SKELETON LOADING
+   ============================================ */
+
+.message-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 18px;
+    background: rgba(0, 218, 255, 0.02);
+    border: 1px dashed rgba(0, 218, 255, 0.2);
+    margin-bottom: 15px;
+}
+
+.skeleton-line {
+    height: 10px;
+    background: linear-gradient(90deg,
+            rgba(0, 218, 255, 0.05) 0%,
+            rgba(0, 218, 255, 0.15) 50%,
+            rgba(0, 218, 255, 0.05) 100%);
+    background-size: 200% 100%;
+    animation: hudScan 2s infinite linear;
+}
+
+@keyframes hudScan {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* ============================================
+   CONNECTION STATUS
+   ============================================ */
+
+.connection-status {
+    position: fixed;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+    padding: 2px 20px;
+    font-family: var(--font-head);
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    z-index: 1050;
+    transition: transform 0.3s ease;
+    background: #000;
+    border: 1px solid currentColor;
+}
+
+.connection-status.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+.connection-status.connecting {
+    color: var(--iaf-saffron);
+    border-color: var(--iaf-saffron);
+}
+
+.connection-status.error {
+    color: #ff3333;
+    border-color: #ff3333;
+}
+
+.connection-status.success {
+    color: var(--iaf-green);
+    border-color: var(--iaf-green);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+
+    .typing-dot,
+    .sending-spinner,
+    .message-bubble.message-new {
+        animation: none;
+    }
+}

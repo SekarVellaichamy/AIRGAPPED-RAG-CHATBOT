@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A.M.A.R. - Secure Login</title>
+    <!-- Fonts -->
+    <link rel="stylesheet" href="/static/css/fonts.css">
+    <!-- Bootstrap CSS -->
+    <link href="/static/vendor/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="/static/css/theme-iaf.css?v=2">
+    <!-- Gimmicks -->
+    <script src="/static/js/gimmicks.js"></script>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            /* Background handled by global theme + particles */
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            padding: 2.5rem;
+            border-radius: 20px;
+            background: rgba(11, 17, 32, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 176, 255, 0.3);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 176, 255, 0.05);
+            position: relative;
+            z-index: 10;
+            animation: cardEntrance 0.8s ease-out;
+        }
+
+        @keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .iaf-logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        /* IAF Roundel SVG Animation */
+        .iaf-roundel {
+            width: 80px;
+            height: 80px;
+            animation: floatLogo 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 15px rgba(255, 153, 51, 0.4));
+        }
+
+        @keyframes floatLogo {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .login-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--iaf-white);
+            font-family: var(--font-head);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(0, 176, 255, 0.5);
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--iaf-white);
+            padding: 12px;
+            font-family: var(--font-body);
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--iaf-sky);
+            color: var(--iaf-white);
+            box-shadow: 0 0 15px rgba(0, 176, 255, 0.2);
+        }
+
+        .form-label {
+            color: var(--iaf-sky);
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-login {
+            background: linear-gradient(90deg, var(--iaf-blue-dark), #000);
+            border: 1px solid var(--iaf-sky);
+            color: var(--iaf-sky);
+            font-family: var(--font-head);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login:hover {
+            background: var(--iaf-sky);
+            color: var(--iaf-navy);
+            box-shadow: 0 0 30px var(--iaf-sky);
+        }
+
+        /* Decorative scanners */
+        .scanner-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--iaf-sky), transparent);
+            animation: scan 3s linear infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Background Canvas for particles -->
+    <canvas id="particles-canvas"
+        style="position: absolute; top:0; left:0; width:100%; height:100%; z-index: 1;"></canvas>
+
+    <div class="login-card">
+        <div class="scanner-line"></div>
+
+        <div class="iaf-logo-container">
+            <!-- IAF Roundel SVG -->
+            <svg class="iaf-roundel" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- Outer Ring (Saffron) -->
+                <circle cx="50" cy="50" r="45" fill="#FF9933" stroke="#cc7a00" stroke-width="2" />
+                <!-- Middle Ring (White) -->
+                <circle cx="50" cy="50" r="30" fill="#FFFFFF" stroke="#e0e0e0" stroke-width="1" />
+                <!-- Inner Circle (Green) -->
+                <circle cx="50" cy="50" r="15" fill="#138808" stroke="#0f6b06" stroke-width="1" />
+                <!-- Shine effect -->
+                <circle cx="50" cy="50" r="45" fill="url(#shine)" opacity="0.3" />
+                <defs>
+                    <radialGradient id="shine" cx="30%" cy="30%" r="70%">
+                        <stop offset="0%" stop-color="white" stop-opacity="0.8" />
+                        <stop offset="100%" stop-color="white" stop-opacity="0" />
+                    </radialGradient>
+                </defs>
+            </svg>
+        </div>
+
+        <h3 class="login-title">A.M.A.R.</h3>
+        <p class="text-center text-muted mb-4"
+            style="font-size: 0.75rem; letter-spacing: 1px; color: var(--iaf-sky) !important;">AI-ASSISTANT FOR
+            MANAGEMENT AND ADMINISTRATIVE RECORDS</p>
+
+        {% if error %}
+        <div class="alert alert-danger"
+            style="background: rgba(220, 38, 38, 0.2); border-color: #ef4444; color: #fca5a5; font-size: 0.9rem;">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form action="/login" method="POST" id="login-form">
+            <!-- CSRF Token - populated by JavaScript from cookie -->
+            <input type="hidden" name="csrf_token" id="csrf_token" value="">
+            <div class="mb-4">
+                <label class="form-label">Identity</label>
+                <input type="text" name="username" class="form-control" required autocomplete="off"
+                    placeholder="ENTER USERNAME">
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Credentials</label>
+                <input type="password" name="password" class="form-control" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn btn-primary w-100 btn-login">
+                Authenticate
+            </button>
+        </form>
+
+        <script>
+            // Copy CSRF token from cookie to hidden form field
+            document.addEventListener('DOMContentLoaded', function () {
+                const csrfToken = document.cookie.split('; ')
+                    .find(row => row.startsWith('csrf_token='))
+                    ?.split('=')[1];
+                if (csrfToken) {
+                    document.getElementById('csrf_token').value = decodeURIComponent(csrfToken);
+                }
+            });
+        </script>
+
+        <div class="text-center mt-4">
+            <small
+                style="color: var(--text-secondary); font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase;">
+                Restricted System // Authorized Personnel Only
+            </small>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="/static/vendor/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,45 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: chatbot_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-chatbot}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: chatbot_app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-chatbot}
+      LLM_PROVIDER: ${LLM_PROVIDER:-vllm}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      VLLM_BASE_URL: ${VLLM_BASE_URL:-http://host.docker.internal:8000/v1}
+      SSL_ENABLED: ${SSL_ENABLED:-True}
+      SSL_CERTFILE: ${SSL_CERTFILE:-ssl/cert.pem}
+      SSL_KEYFILE: ${SSL_KEYFILE:-ssl/key.pem}
+      SERVER_PORT: ${SERVER_PORT:-8080}
+      BASE_URL: ${BASE_URL:-https://chat.afro.iaf.in}
+      SECRET_KEY: ${SECRET_KEY}
+      SECURE_COOKIES: ${SECURE_COOKIES:-True}
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  postgres_data:

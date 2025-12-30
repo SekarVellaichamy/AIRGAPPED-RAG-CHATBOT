@@ -1,0 +1,17 @@
+{
+    "title": "Test JSON Document",
+    "meta": {
+        "author": "Antigravity",
+        "date": "2025-12-11"
+    },
+    "content": [
+        {
+            "header": "Section 1",
+            "body": "This is a test of JSON parsing via MarkItDown."
+        },
+        {
+            "header": "Section 2",
+            "body": "It should convert this structured data into text or markdown."
+        }
+    ]
+}

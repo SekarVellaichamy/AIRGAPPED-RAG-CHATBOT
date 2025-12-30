@@ -1,0 +1,181 @@
+{% extends "admin/base_admin.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">File Management</h2>
+        <button class="btn btn-danger" id="btn-reset-all">
+            <i class="bi bi-trash3-fill me-2"></i>Reset All Files & Vectors
+        </button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <!-- Add Document Upload Form -->
+            <div class="mb-4 p-3 bg-light rounded">
+                <h5 class="card-title">Upload New Documents</h5>
+                <form method="POST" action="/admin/files/upload" enctype="multipart/form-data"
+                    class="d-flex gap-2 align-items-center">
+                    <input type="file" name="files" class="form-control" multiple required>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-upload"></i> Upload
+                    </button>
+                </form>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Filename</th>
+                            <th>Type</th>
+                            <th>Uploaded At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="files-table-body">
+                        {% for doc in documents %}
+                        <tr id="doc-row-{{ doc.id }}">
+                            <td>#{{ doc.id }}</td>
+                            <td>
+                                <i class="bi bi-file-earmark me-2"></i>
+                                {{ doc.filename }}
+                            </td>
+                            <td><span class="badge bg-info text-dark">{{ doc.file_type }}</span></td>
+                            <td>{{ doc.uploaded_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="/admin/files/{{ doc.id }}/download" class="btn btn-sm btn-outline-primary"
+                                        title="Download">
+                                        <i class="bi bi-download"></i>
+                                    </a>
+                                    <a href="/admin/files/{{ doc.id }}/inspect" class="btn btn-sm btn-outline-secondary"
+                                        title="Inspect">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-danger btn-delete-file"
+                                        data-doc-id="{{ doc.id }}"
+                                        data-confirm="Delete this file and all its embeddings?">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr id="empty-row">
+                            <td colspan="5" class="text-center text-muted">No files uploaded yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Delete individual file
+        document.querySelectorAll('.btn-delete-file').forEach(button => {
+            button.addEventListener('click', async function (e) {
+                e.preventDefault();
+
+                const docId = this.dataset.docId;
+                const confirmMessage = this.dataset.confirm;
+                const rowElement = document.getElementById('doc-row-' + docId);
+
+                // Show confirmation dialog
+                const confirmed = await Toast.confirm(confirmMessage, {
+                    title: 'Confirm Delete',
+                    confirmText: 'Delete',
+                    cancelText: 'Cancel',
+                    type: 'error'
+                });
+
+                if (!confirmed) return;
+
+                try {
+                    const result = await API.delete('/admin/files/' + docId);
+
+                    if (result.ok && result.data.success) {
+                        if (rowElement) {
+                            rowElement.remove();
+                        }
+                        // Show warnings if any
+                        if (result.data.warnings && result.data.warnings.length > 0) {
+                            Toast.warning('File deleted with warnings: ' + result.data.warnings.join(', '));
+                        } else {
+                            Toast.success('File deleted successfully');
+                        }
+                        // Check if table is now empty
+                        checkEmptyTable();
+                    } else {
+                        Toast.error(result.data.error || 'Failed to delete file');
+                    }
+                } catch (error) {
+                    Toast.error('Failed to delete file');
+                }
+            });
+        });
+
+        // Reset all files
+        document.getElementById('btn-reset-all').addEventListener('click', async function () {
+            const confirmed = await Toast.confirm(
+                'This will permanently delete ALL uploaded files and their vector embeddings. This action cannot be undone!',
+                {
+                    title: 'Reset All Files & Vectors',
+                    confirmText: 'Delete Everything',
+                    cancelText: 'Cancel',
+                    type: 'error'
+                }
+            );
+
+            if (!confirmed) return;
+
+            // Double confirmation for safety
+            const doubleConfirmed = await Toast.confirm(
+                'Are you absolutely sure? All documents and embeddings will be permanently removed.',
+                {
+                    title: 'Final Confirmation',
+                    confirmText: 'Yes, Delete All',
+                    cancelText: 'Cancel',
+                    type: 'error'
+                }
+            );
+
+            if (!doubleConfirmed) return;
+
+            try {
+                const result = await API.delete('/admin/files/reset/all');
+
+                if (result.ok && result.data.success) {
+                    const msg = `Reset complete: ${result.data.documentsDeleted} documents, ${result.data.chunksDeleted} chunks deleted`;
+
+                    if (result.data.warnings && result.data.warnings.length > 0) {
+                        Toast.warning(msg + ' (with warnings)');
+                    } else {
+                        Toast.success(msg);
+                    }
+
+                    // Remove all rows and show empty message
+                    const tbody = document.getElementById('files-table-body');
+                    tbody.innerHTML = '<tr id="empty-row"><td colspan="5" class="text-center text-muted">No files uploaded yet.</td></tr>';
+                } else {
+                    Toast.error(result.data.error || 'Failed to reset files');
+                }
+            } catch (error) {
+                Toast.error('Failed to reset files');
+            }
+        });
+
+        function checkEmptyTable() {
+            const tbody = document.getElementById('files-table-body');
+            const rows = tbody.querySelectorAll('tr:not(#empty-row)');
+            if (rows.length === 0) {
+                tbody.innerHTML = '<tr id="empty-row"><td colspan="5" class="text-center text-muted">No files uploaded yet.</td></tr>';
+            }
+        }
+    });
+</script>
+{% endblock %}
